@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script"
+    "test": "mocha -w --ui bdd --compilers coffee:coffee-script"
   },
   "dependencies": {
     "mocha": "1.9.0",
