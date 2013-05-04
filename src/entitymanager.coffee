@@ -1,17 +1,12 @@
-Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
+array_remove = (a, e) ->
+    a[t..t] = [] if (t = a.indexOf(e)) > -1
+#Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 class EntityManager
     constructor: () ->
         @nextEntity = 0
         @entities = []
         @components = {}
-
-        # Buffers for entity modification
-        @queueRemoveEntity = []
-        @queueCreateComponent = []
-        @queueRemoveComponent = []
-        @queueEnterEntity = {}
-        @queueExitEntity = {}
 
         # Subscription data
         @subscribers = []
@@ -25,10 +20,9 @@ class EntityManager
         return new_entity
 
     # Add an entity to the remove queue
-    removeEntity: (entity, flush) ->
+    removeEntity: (entity) ->
         if entity in @entities
-            @queueRemoveEntity.push entity
-        if flush then this.flush()
+            array_remove @entities, entity
 
     # Set new data for the specified component on the entity
     # Adds the data to either the enter or update queue
@@ -36,27 +30,26 @@ class EntityManager
         if not (component in @components)
             @components[component] = {}
         if not (entity in @components[component])
-            @queueCreateComponent.push
-                entity: entity
-                component: component
-                data: data
+            @components[component][entity] = data
 
     # Remove the component from the entity
     # Adds the data to the exit queue
     removeComponent: (entity, component) ->
         if not component in @components
             @components[component] = {}
-        if entity in @components[component]
-            @queueRemoveComponent.push
-                entity: entity
-                component: component
+        if entity of @components[component]
+            delete @components[component][entity]
 
     #Query functions
+    getComponentForEntity: (entity, component) ->
+        return @components[component][entity]
+
     getComponentsForEntity: (entity) ->
         data = {}
-        for component, componentID in @components
-            if entity in component
+        for componentID, component of @components
+            if entity of component
                 data[componentID] = component[entity]
+        return data
 
     getEntitiesWithComponent: (component) ->
         entities = []
@@ -76,83 +69,47 @@ class EntityManager
                 entities.push entity
         return entities
 
-    # Subscription functions
-    subscribe: (subscriberID, components, enterHandler, exitHandler) ->
+    # Subscription process
+    subscribe: (subscriberID, components, enterHandler, exitHandler, notify) ->
         for component in components
-            @subscriberComponents[component].push subscriber
+            if not (component in @subscriberComponents)
+                @subscriberComponents[component] = []
+            @subscriberComponents[component].push subscriberID
 
-        @queueEnterEntity[subscriberID] = []
-        @queueExitEntity[subscriberID] = []
-        @subscribers[subscriberID] =
+        subscriber =
             components: components
+            entities: []
             enterHandler: enterHandler
             exitHandler: exitHandler
 
-    flush: () ->
-        # Run create operations
-        while @queueCreateComponent.length > 0
-            c = @queueCreateComponent.shift()
-            console.log "creating component" + c
-            @components[c.component][c.entity] = c.data
+        @subscribers[subscriberID] = subscriber
+        if notify then this.notifySubscriber subscriber
 
-        # Fill synchronization queues for each subscriber
-        for subscriber, subscriberID in @subscribers
-            for createComponent in @queueCreateComponent
-                if this._subscriberEnterComponent createComponent.entity, createComponent.component
-                    @queueEnterEntity[subscriberID].push(createComponent.entity)
+    notifySubscriber: (subscriber) ->
+        queueEnterEntities = []
+        queueExitEntities = []
+        for entity in @entities
+            if (this._subscriberNeedsEntity subscriber, entity) and not (entity in subscriber.entities)
+                subscriber.entities.push entity
+                queueEnterEntities.push entity
 
-            for removeComponent in @queueRemoveComponent
-                if this._subscriberExitComponent removeComponent.entity, removeComponent.component
-                    @queueExitEntity[subscriberID].push(removeComponent.entity)
+            if not (this._subscriberNeedsEntity subscriber, entity) and (entity in subscriber.entities)
+                array_remove subscriber.entities, entity
+                queueExitEntities.push entity
+        subscriber.enterHandler queueEnterEntities
+        subscriber.exitHandler queueExitEntities
 
-            for entity in @queueRemoveEntity
-                if this._subscrierNeedsEntity(subscriber, entity)
-                    @queueExitEntity[subscriberID].push(entity)
-
-        # Trigger synchronization events for subscribers
-        for subscriber, subscriberID in @subscribers
-            subscriber.enterHandler(@queueEnterEntity[subscriberID])
-            subscriber.exitHandler(@queueExitEntity[subscriberID])
-
-        # Run removal operations
-        while @queueRemoveComponent.length > 0
-            c = @queueRemoveComponent.shift()
-            console.log "removing component" + c
-            @components[c.component].remove c.entity
-        while @queueRemoveEntity.length > 0
-            entity = @queueRemoveEntity.shift()
-            console.log "removing entity " + entity
-            console.log @entities
-            @entities.remove entity
-            console.log @entities
+    # Synchronize entity state with all subscribers
+    notify: () ->
+        for subscriberID, subscriber of @subscribers
+            this.notifySubscriber subscriber
 
     # Helper functions
     _subscriberNeedsEntity: (subscriber, entity) ->
-        for c, component in subscriber.components
-            if not entity in @components[c]
+        for component in subscriber.components
+            if not (entity of @components[component])
                 return false
         return true
-
-    _subscriberEnterComponent: (subscriber, newComponent) ->
-        needEntityBefore = true
-        needEntityAfter = true
-        for c, component in subscriber.components
-            if not entity in @components[c]
-                needEntityBefore = false
-                if not component = newComponent
-                    needEntityAfter = false
-        return needEntityAfter && not needEntityBefore
-
-    _subscriberExitComponent: (subscriber, newComponent) ->
-        needEntityBefore = true
-        needEntityAfter = true
-        for c, component in subscriber.components
-            if not entity in @components[c]
-                needEntityBefore = false
-                needEntityAfter = false
-            if component = newComponent
-                needEntityAfter = false
-        return needEntityAfter && not needEntityBefore
 
 
 exports.EntityManager = EntityManager

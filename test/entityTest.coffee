@@ -7,34 +7,76 @@ describe "Entity management", ->
         em = new entitymanager.EntityManager
 
     describe "#createEntity", ->
-        entity1 = em.createEntity false
-        entity2 = em.createEntity false
         it "should be truthy", ->
+            entity1 = em.createEntity()
             entity1.should.not.be.null
 
         it "shouldn't be repeated", ->
+            entity1 = em.createEntity()
+            entity2 = em.createEntity()
             entity1.should.not.equal entity2
 
     describe "#removeEntity", ->
-        entity = em.createEntity true
         it "should remove the entity", ->
-            em.removeEntity entity, true
+            entity = em.createEntity()
+            em.removeEntity entity
             em.entities.should.not.contain entity
 
     describe "#setComponent", ->
-        entity = em.createEntity false
-        it "should create a component category", ->
-            em.setComponent entity, "test"
-                name: "Hello"
+        it "should add a component to an entity", ->
+            entity = em.createEntity false
+            em.setComponent entity, "test",
+                name: "Hello", true
+            components = em.getComponentsForEntity entity
+            components.should.contain.key "test"
 
     describe "#removeComponent", ->
-        entity = em.createEntity false
-        it "should create a component category", ->
-            em.setComponent entity, "test"
-                name: "Hello"
+        it "should remove component", ->
+            entity = em.createEntity false
+            em.setComponent entity, "test", 
+                name: "Hello", true
+            components = em.getComponentsForEntity entity
+            components.should.contain.key "test"
+
+            em.removeComponent entity, "test", true
+            components = em.getComponentsForEntity entity
+            components.should.not.contain.key "test"
+
+    describe "#getComponentsForEntity", ->
+        it "should add component to entity", ->
+            entity = em.createEntity false
+            components = em.getComponentsForEntity entity
+            components.should.not.contain.key "test"
+            em.setComponent entity, "test", 
+                name: "Hello", true
+            components = em.getComponentsForEntity entity
+            components.should.contain.key "test"
 
     describe "#subscribe", ->
-        entity = em.createEntity false
         it "should create a component category", ->
-            em.setComponent entity, "test"
+            entity1 = em.createEntity false
+            em.setComponent entity1, "test",
                 name: "Hello"
+            em.subscribe "testSubscriber", ["test"], (entities) ->
+                    entities.should.not.be.empty
+                , (entities) ->
+                    entities.should.be.empty
+            em.notify()
+
+    describe "#subscribe", ->
+        console.log "Test"
+        it "should remove a component category", ->
+            test = false
+            entity1 = em.createEntity false
+            em.setComponent entity1, "test",
+                name: "Hello"
+            em.subscribe "testSubscriber", ["test"], (entities) ->
+                    if test
+                        entities.should.be.empty
+                , (entities) ->
+                    if test
+                        entities.should.not.be.empty
+                , true
+            em.removeComponent entity1, "test"
+            test = true
+            em.notify()
