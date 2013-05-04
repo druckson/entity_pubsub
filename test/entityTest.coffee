@@ -26,7 +26,7 @@ describe "Entity management", ->
         it "should add a component to an entity", ->
             entity = em.createEntity false
             em.setComponent entity, "test",
-                name: "Hello", true
+                foo: "bar", true
             components = em.getComponentsForEntity entity
             components.should.contain.key "test"
 
@@ -34,7 +34,7 @@ describe "Entity management", ->
         it "should remove component", ->
             entity = em.createEntity false
             em.setComponent entity, "test", 
-                name: "Hello", true
+                foo: "bar", true
             components = em.getComponentsForEntity entity
             components.should.contain.key "test"
 
@@ -48,7 +48,7 @@ describe "Entity management", ->
             components = em.getComponentsForEntity entity
             components.should.not.contain.key "test"
             em.setComponent entity, "test", 
-                name: "Hello", true
+                foo: "bar", true
             components = em.getComponentsForEntity entity
             components.should.contain.key "test"
 
@@ -56,7 +56,7 @@ describe "Entity management", ->
         it "should create a component category", ->
             entity1 = em.createEntity false
             em.setComponent entity1, "test",
-                name: "Hello"
+                foo: "bar"
             em.subscribe "testSubscriber", ["test"], (entities) ->
                     entities.should.not.be.empty
                 , (entities) ->
@@ -69,7 +69,7 @@ describe "Entity management", ->
             test = false
             entity1 = em.createEntity false
             em.setComponent entity1, "test",
-                name: "Hello"
+                foo: "bar"
             em.subscribe "testSubscriber", ["test"], (entities) ->
                     if test
                         entities.should.be.empty
