@@ -30,6 +30,18 @@ describe "Entity management", ->
             components = em.getComponentsForEntity entity
             components.should.contain.key "test"
 
+        it "should work for multiple entities", ->
+            entity1 = em.createEntity false
+            em.setComponent entity1, "test",
+                foo: "bar", true
+            entity2 = em.createEntity false
+            em.setComponent entity2, "test",
+                foo: "bar", true
+            components1 = em.getComponentsForEntity entity1
+            components2 = em.getComponentsForEntity entity2
+            components1.should.contain.key "test"
+            components2.should.contain.key "test"
+
     describe "#removeComponent", ->
         it "should remove component", ->
             entity = em.createEntity false
@@ -59,6 +71,21 @@ describe "Entity management", ->
                 foo: "bar"
             em.subscribe "testSubscriber", ["test"], (entities) ->
                     entities.should.not.be.empty
+                , (entities) ->
+                    entities.should.be.empty
+            em.notify()
+
+        it "should work for multiple entities", ->
+            entity1 = em.createEntity false
+            em.setComponent entity1, "test",
+                foo: "bar"
+
+            entity2 = em.createEntity false
+            em.setComponent entity2, "test",
+                foo: "bar"
+
+            em.subscribe "testSubscriber", ["test"], (entities) ->
+                    entities.length.should.equal 2
                 , (entities) ->
                     entities.should.be.empty
             em.notify()

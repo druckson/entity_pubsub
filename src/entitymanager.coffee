@@ -1,10 +1,14 @@
 array_remove = (a, e) ->
     a[t..t] = [] if (t = a.indexOf(e)) > -1
+array_contains = (a, e) ->
+    for element in a
+        return true if element is e
+    return false
 #Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 class EntityManager
     constructor: () ->
-        @nextEntity = 0
+        @nextEntity = 100
         @entities = []
         @components = {}
 
@@ -27,7 +31,7 @@ class EntityManager
     # Set new data for the specified component on the entity
     # Adds the data to either the enter or update queue
     setComponent: (entity, component, data) ->
-        if not (component in @components)
+        if not (component of @components)
             @components[component] = {}
         if not (entity in @components[component])
             @components[component][entity] = data
@@ -38,7 +42,7 @@ class EntityManager
         if not component in @components
             @components[component] = {}
         if entity of @components[component]
-            delete @components[component][entity]
+            array_remove @components[component], entity
 
     #Query functions
     getComponentForEntity: (entity, component) ->
@@ -85,19 +89,24 @@ class EntityManager
         @subscribers[subscriberID] = subscriber
         if notify then this.notifySubscriber subscriber
 
+    # Synchronize state with a single subscriber
     notifySubscriber: (subscriber) ->
         queueEnterEntities = []
         queueExitEntities = []
-        for entity in @entities
+        for id, entity of @entities
             if (this._subscriberNeedsEntity subscriber, entity) and not (entity in subscriber.entities)
-                subscriber.entities.push entity
                 queueEnterEntities.push entity
+                subscriber.entities.push entity
 
-            if not (this._subscriberNeedsEntity subscriber, entity) and (entity in subscriber.entities)
-                array_remove subscriber.entities, entity
+        for id, entity of subscriber.entities
+            if not (this._subscriberNeedsEntity subscriber, entity)
                 queueExitEntities.push entity
-        subscriber.enterHandler queueEnterEntities
-        subscriber.exitHandler queueExitEntities
+                array_remove subscriber.entities, entity
+
+        if queueEnterEntities.length > 0
+            subscriber.enterHandler queueEnterEntities
+        if queueExitEntities.length > 0
+            subscriber.exitHandler queueExitEntities
 
     # Synchronize entity state with all subscribers
     notify: () ->
@@ -107,7 +116,7 @@ class EntityManager
     # Helper functions
     _subscriberNeedsEntity: (subscriber, entity) ->
         for component in subscriber.components
-            if not (entity of @components[component])
+            if not (array_contains @entities, entity) or not (entity of @components[component])
                 return false
         return true
 
