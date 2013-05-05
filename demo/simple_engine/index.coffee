@@ -2,8 +2,11 @@ eng = require "./engine"
 
 engine = new eng.Engine
 
-engine.addSystem "diagnostics",
-    components: ["test"]
+class Diagnostics
+    constructor: () ->
+        @components = ["test"]
+    init: (engine) ->
+        @engine = engine
     addEntities: (entities) ->
         console.log "Adding"
         console.log entities
@@ -13,11 +16,12 @@ engine.addSystem "diagnostics",
     tick: (dt) ->
         console.log "tick"
 
+engine.addSystem "diagnostics", new Diagnostics
+
 engine.createEntity()
 engine.createEntity()
 
 engine.gameLoop(0.1)
-engine.removeOneEntity()
-engine.gameLoop(0.1)
-engine.removeOneEntity()
-engine.gameLoop(0.1)
+setInterval () ->
+    engine.removeOneEntity()
+, 1000

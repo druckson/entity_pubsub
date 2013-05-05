@@ -15,8 +15,10 @@ class Engine
         @em.subscribe systemName, system.components,
                       system.addEntities, system.removeEntities
     gameLoop: (dt) ->
-        @em.notify()
-        #while true
-        #    for system in @systems
-        #        system.tick
+        self = this
+        for name, system of @systems
+            system.init this
+        setInterval () ->
+            self.em.notify()
+        , 500
 exports.Engine = Engine
