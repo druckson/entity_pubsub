@@ -11,10 +11,7 @@ class EntityManager
         @nextEntity = 100
         @entities = []
         @components = {}
-
-        # Subscription data
         @subscribers = []
-        @subscriberComponents = {}
 
     # Create and return a new entity ID
     # For now, entity IDs are integers counting from 0
@@ -33,16 +30,16 @@ class EntityManager
     setComponent: (entity, component, data) ->
         if not (component of @components)
             @components[component] = {}
-        if not (entity in @components[component])
+        if not (entity of @components[component])
             @components[component][entity] = data
 
     # Remove the component from the entity
     # Adds the data to the exit queue
     removeComponent: (entity, component) ->
-        if not component in @components
+        if not (component of @components)
             @components[component] = {}
-        if entity of @components[component]
-            array_remove @components[component], entity
+        if (entity of @components[component])
+            delete @components[component][entity]
 
     #Query functions
     getComponentForEntity: (entity, component) ->
@@ -75,11 +72,6 @@ class EntityManager
 
     # Subscription process
     subscribe: (subscriberID, components, enterHandler, exitHandler, notify) ->
-        for component in components
-            if not (component in @subscriberComponents)
-                @subscriberComponents[component] = []
-            @subscriberComponents[component].push subscriberID
-
         subscriber =
             components: components
             entities: []

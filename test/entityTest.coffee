@@ -31,12 +31,10 @@ describe "Entity management", ->
             components.should.contain.key "test"
 
         it "should work for multiple entities", ->
-            entity1 = em.createEntity false
-            em.setComponent entity1, "test",
-                foo: "bar", true
-            entity2 = em.createEntity false
-            em.setComponent entity2, "test",
-                foo: "bar", true
+            entity1 = em.createEntity()
+            em.setComponent entity1, "test"
+            entity2 = em.createEntity()
+            em.setComponent entity2, "test"
             components1 = em.getComponentsForEntity entity1
             components2 = em.getComponentsForEntity entity2
             components1.should.contain.key "test"
@@ -91,7 +89,6 @@ describe "Entity management", ->
             em.notify()
 
     describe "#subscribe", ->
-        console.log "Test"
         it "should remove a component category", ->
             test = false
             entity1 = em.createEntity false
