@@ -33,6 +33,10 @@ class EntityManager
         if not (entity of @components[component])
             @components[component][entity] = data
 
+    setComponents: (entity, data) ->
+        for key, value of data
+            @setComponent entity, key, value
+
     # Remove the component from the entity
     # Adds the data to the exit queue
     removeComponent: (entity, component) ->
@@ -50,6 +54,12 @@ class EntityManager
         for componentID, component of @components
             if entity of component
                 data[componentID] = component[entity]
+        return data
+
+    getComponentsForEntities: (entities) ->
+        data = []
+        for entity in entities
+            data.push getComponentsForEntity entity
         return data
 
     getEntitiesWithComponent: (component) ->
@@ -113,4 +123,4 @@ class EntityManager
         return true
 
 
-exports.EntityManager = EntityManager
+module.exports = EntityManager
