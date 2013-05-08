@@ -3,7 +3,7 @@ init:
 	npm install
 
 build:
-	coffee -o lib/ -c - src/
+	coffee -o lib/ -c src/
 
 clean:
 	rm -rf lib/
