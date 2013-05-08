@@ -1,9 +1,11 @@
 array_remove = (a, e) ->
     a[t..t] = [] if (t = a.indexOf(e)) > -1
+
 array_contains = (a, e) ->
     for element in a
         return true if element is e
     return false
+
 #Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
 
 class EntityManager
