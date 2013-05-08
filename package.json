@@ -6,7 +6,7 @@
         "type": "git",
         "url": "https://github.com/druckson/entity_pubsub.git"
     },
-    "main": "lib/entitymananger.js",
+    "main": "lib/entity_pubsub.js",
     "scripts": {
         "test": "mocha -w --ui bdd --compilers coffee:coffee-script"
     },
