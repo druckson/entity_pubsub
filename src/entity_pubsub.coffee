@@ -22,6 +22,11 @@ class EntityManager
         @entities.push new_entity
         return new_entity
 
+    addEntity: (entityID) ->
+        @nextEntity = Math.max @nextEntity, entityID+1
+        @entities.push entityID
+        return entityID
+
     # Add an entity to the remove queue
     removeEntity: (entity) ->
         if entity in @entities
