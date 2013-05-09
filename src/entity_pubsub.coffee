@@ -53,20 +53,24 @@ class EntityManager
             delete @components[component][entity]
 
     #Query functions
-    getComponentForEntity: (entity, component) ->
+    getComponentForEntity: (entity, components) ->
         return @components[component][entity]
 
-    getComponentsForEntity: (entity) ->
+    getComponentsForEntity: (entity, components) ->
         data = {}
         for componentID, component of @components
-            if entity of component
-                data[componentID] = component[entity]
+            if components
+                if entity of component and componentID in components
+                    data[componentID] = component[entity]
+            else
+                if entity of component
+                    data[componentID] = component[entity]
         return data
 
-    getComponentsForEntities: (entities) ->
+    getComponentsForEntities: (entities, components) ->
         data = []
         for entity in entities
-            data.push @getComponentsForEntity entity
+            data.push @getComponentsForEntity entity, components
         return data
 
     getEntitiesWithComponent: (component) ->
