@@ -61,7 +61,7 @@ class EntityManager
     getComponentsForEntities: (entities) ->
         data = []
         for entity in entities
-            data.push getComponentsForEntity entity
+            data.push @getComponentsForEntity entity
         return data
 
     getEntitiesWithComponent: (component) ->
