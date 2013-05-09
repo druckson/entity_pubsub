@@ -68,9 +68,9 @@ class EntityManager
         return data
 
     getComponentsForEntities: (entities, components) ->
-        data = []
-        for entity in entities
-            data.push @getComponentsForEntity entity, components
+        data = {}
+        for entityID in entities
+            data[entityID] = @getComponentsForEntity entityID, components
         return data
 
     getEntitiesWithComponent: (component) ->
