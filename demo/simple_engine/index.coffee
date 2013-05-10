@@ -20,8 +20,9 @@ engine.addSystem "diagnostics", new Diagnostics
 
 engine.createEntity()
 engine.createEntity()
+engine.createEntity()
 
 engine.gameLoop(0.1)
 setInterval () ->
     engine.removeOneEntity()
-, 1000
+, 100

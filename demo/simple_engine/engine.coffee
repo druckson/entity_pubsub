@@ -20,5 +20,5 @@ class Engine
             system.init this
         setInterval () ->
             self.em.notify()
-        , 500
+        , 300
 exports.Engine = Engine
