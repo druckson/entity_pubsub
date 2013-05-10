@@ -1,4 +1,4 @@
-EntityManager = require "../lib/entity_pubsub"
+EntityManager = require "../src/entity_pubsub"
 
 describe "Entity management", ->
   em = new EntityManager
@@ -64,15 +64,23 @@ describe "Entity management", ->
 
   describe "#getEntitiesWithComponents", ->
     it "should retrieve the correct entities", ->
-      entityInclude = em.createEntity()
-      em.setComponent entityInclude, "include",
+      entityInclude1 = em.createEntity()
+      em.setComponent entityInclude1, "include",
         foo: "bar"
+
+      entityInclude2 = em.createEntity()
+      em.setComponent entityInclude2, "include",
+        foo: "bar"
+      em.setComponent entityInclude2, "exclude",
+        foo: "bar"
+
       entityExclude = em.createEntity()
       em.setComponent entityExclude, "exclude",
         foo: "bar"
 
       entities = em.getEntitiesWithComponents ["include"]
-      entities.should.contain entityInclude
+      entities.should.contain entityInclude1
+      entities.should.contain entityInclude2
       entities.should.not.contain entityExclude
 
   describe "#subscribe", ->
