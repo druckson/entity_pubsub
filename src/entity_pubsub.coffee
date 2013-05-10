@@ -24,7 +24,6 @@ class EntityManager
     return new_entity
 
   addEntity: (entityID) ->
-    @nextEntity = Math.max @nextEntity, entityID+1
     @entities.push entityID
     return entityID
 
