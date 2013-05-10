@@ -1,10 +1,10 @@
-entitymanager = require "../src/entitymanager"
+EntityManager = require "../lib/entity_pubsub"
 
 describe "Entity management", ->
-    em = new entitymanager.EntityManager
+    em = new EntityManager
 
     beforeEach ->
-        em = new entitymanager.EntityManager
+        em = new EntityManager
 
     describe "#createEntity", ->
         it "should be truthy", ->
