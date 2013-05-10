@@ -13,7 +13,9 @@
     "engines": {
         "node": "*"
     },
-    "dependencies": {},
+    "dependencies": {
+        "node-uuid": "1.4.0"
+    },
     "devDependencies": {
         "mocha": "*",
         "chai": "*"

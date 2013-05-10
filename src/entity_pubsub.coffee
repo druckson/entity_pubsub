@@ -1,3 +1,5 @@
+uuid = require "node-uuid"
+
 array_remove = (a, e) ->
     a[t..t] = [] if (t = a.indexOf(e)) > -1
 
@@ -10,7 +12,6 @@ array_contains = (a, e) ->
 
 class EntityManager
     constructor: () ->
-        @nextEntity = 100
         @entities = []
         @components = {}
         @subscribers = []
@@ -18,7 +19,7 @@ class EntityManager
     # Create and return a new entity ID
     # For now, entity IDs are integers counting from 0
     createEntity: ->
-        new_entity = @nextEntity++
+        new_entity = uuid.v4()
         @entities.push new_entity
         return new_entity
 
