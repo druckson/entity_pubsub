@@ -77,7 +77,7 @@ class EntityManager
   getEntitiesWithComponent: (component) ->
     entities = []
     for entity in @entities
-      if component of @components and entity in @components[component]
+      if component of @components and entity of @components[component]
         entities.push entity
     return entities
 
@@ -86,7 +86,7 @@ class EntityManager
     for entity in @entities
       present = true
       for component in components
-        if not (entity of @components[component])
+        if component of @components and not (entity of @components[component])
           present = false
       if present
         entities.push entity
