@@ -86,7 +86,7 @@ class EntityManager
     for entity in @entities
       present = true
       for component in components
-        if component of @components and not (entity in @components[component])
+        if not (entity of @components[component])
           present = false
       if present
         entities.push entity
