@@ -95,15 +95,15 @@ class EntityManager
   # EXPERIMENTAL INTERFACE
   query: (parameters) ->
     if parameters instanceof Array
-      return getEntitiesWithComponents parameters
+      return @getEntitiesWithComponents parameters
     else
-      return getEntitiesWithComponent
+      return @getEntitiesWithComponent
 
   fill: (entities, mask) ->
     if entities instanceof Array
-      return getComponentsForEntities entities, mask
+      return @getComponentsForEntities entities, mask
     else
-      return getComponentsForEntity entities, mask
+      return @getComponentsForEntity entities, mask
 
   queryFill: (parameters, mask) ->
     @fill @query(parameters), mask
