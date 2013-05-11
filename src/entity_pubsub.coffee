@@ -133,9 +133,9 @@ class EntityManager
         array_remove subscriber.entities, entity
 
     if queueEnterEntities.length > 0
-      subscriber.enterHandler queueEnterEntities
+      subscriber.enterHandler(@fill queueEnterEntities)
     if queueExitEntities.length > 0
-      subscriber.exitHandler queueExitEntities
+      subscriber.exitHandler(@fill queueExitEntities)
 
   # Synchronize entity state with all subscribers
   notify: () ->

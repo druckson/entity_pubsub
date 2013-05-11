@@ -104,7 +104,8 @@ describe "Entity management", ->
         foo: "bar"
 
       em.subscribe "testSubscriber", ["test"], (entities) ->
-          entities.length.should.equal 2
+          entities.should.have.property entity1
+          entities.should.have.property entity2
         , (entities) ->
           entities.should.be.empty
       em.notify()
