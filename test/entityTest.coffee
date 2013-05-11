@@ -64,6 +64,19 @@ describe "Entity management", ->
 
   describe "#getEntitiesWithComponents", ->
     it "should retrieve the correct entities", ->
+      entityInclude = em.createEntity()
+      em.setComponent entityInclude, "include",
+        foo: "bar"
+
+      entityExclude = em.createEntity()
+      em.setComponent entityExclude, "exclude",
+        foo: "bar"
+
+      entities = em.getEntitiesWithComponents ["include"]
+      entities.should.contain entityInclude
+      entities.should.not.contain entityExclude
+
+    it "should retrieve multiple correct entities", ->
       entityInclude1 = em.createEntity()
       em.setComponent entityInclude1, "include",
         foo: "bar"
@@ -82,6 +95,13 @@ describe "Entity management", ->
       entities.should.contain entityInclude1
       entities.should.contain entityInclude2
       entities.should.not.contain entityExclude
+
+    it "should work with non-existant components", ->
+      entity = em.createEntity()
+      em.setComponent entity, "test",
+        foo: "bar"
+      em.getEntitiesWithComponents ["ThisComponetDoesNotExist"]
+
 
   describe "#subscribe", ->
     it "should create a component category", ->

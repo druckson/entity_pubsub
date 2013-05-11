@@ -83,10 +83,13 @@ class EntityManager
   getEntitiesWithComponents: (components) ->
     entities = []
     for entity in @entities
-      present = true
+      present = null
       for component in components
         if component of @components and not (entity of @components[component])
           present = false
+        else
+          if present is null
+            present = true
       if present
         entities.push entity
     return entities
@@ -145,7 +148,7 @@ class EntityManager
   # Helper functions
   _subscriberNeedsEntity: (subscriber, entity) ->
     for component in subscriber.components
-      if not (array_contains @entities, entity) or not (entity of @components[component])
+      if not (entity in @entities) or not (component of @components and entity of @components[component])
         return false
     return true
 
