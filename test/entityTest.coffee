@@ -130,6 +130,15 @@ describe "Entity management", ->
           entities.should.be.empty
       em.notify()
 
+    it "should work with empty query", ->
+      entity = em.createEntity()
+      em.setComponent entity, "test",
+        foo: "bar"
+      em.subscribe "testSubscriber", [], (entities) ->
+          entities.should.not.be.empty
+        , (entities) ->
+          entities.should.be.empty
+
   describe "#subscribe", ->
     it "should remove a component category", ->
       test = false
