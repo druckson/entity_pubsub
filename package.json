@@ -8,7 +8,8 @@
     },
     "main": "lib/entity_pubsub.js",
     "scripts": {
-        "test": "mocha -w --ui bdd --compilers coffee:coffee-script"
+        "test": "mocha -w --ui bdd --compilers coffee:coffee-script",
+        "install": "make dist"
     },
     "engines": {
         "node": "*"
