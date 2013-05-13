@@ -8,4 +8,4 @@ build:
 clean:
 	rm -rf lib/
 
-dist: clean init build
+dist: clean build
