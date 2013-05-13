@@ -139,7 +139,6 @@ describe "Entity management", ->
         , (entities) ->
           entities.should.be.empty
 
-  describe "#subscribe", ->
     it "should remove a component category", ->
       test = false
       entity1 = em.createEntity()

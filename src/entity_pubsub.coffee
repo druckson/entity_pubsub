@@ -3,13 +3,6 @@ uuid = require "node-uuid"
 array_remove = (a, e) ->
   a[t..t] = [] if (t = a.indexOf(e)) > -1
 
-array_contains = (a, e) ->
-  for element in a
-    return true if element is e
-  return false
-
-#Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
-
 class EntityManager
   constructor: () ->
     @entities = []
@@ -83,10 +76,14 @@ class EntityManager
   getEntitiesWithComponents: (components) ->
     entities = []
     for entity in @entities
-      present = true
+      present = undefined
       for component in components
-        if component of @components and not (entity of @components[component])
-          present = false
+        if component of @components
+          if entity not of @components[component]
+            present = false
+          else
+            if present is undefined
+              present = true
       if present
         entities.push entity
     return entities
@@ -96,7 +93,7 @@ class EntityManager
     if parameters instanceof Array
       return @getEntitiesWithComponents parameters
     else
-      return @getEntitiesWithComponent
+      return @getEntitiesWithComponent parameters
 
   fill: (entities, mask) ->
     if entities instanceof Array
@@ -123,12 +120,12 @@ class EntityManager
     queueEnterEntities = []
     queueExitEntities = []
     for id, entity of @entities
-      if (this._subscriberNeedsEntity subscriber, entity) and not (entity in subscriber.entities)
+      if (@_subscriberNeedsEntity subscriber, entity) and not (entity in subscriber.entities)
         queueEnterEntities.push entity
         subscriber.entities.push entity
 
     for id, entity of subscriber.entities
-      if not (this._subscriberNeedsEntity subscriber, entity)
+      if not (@_subscriberNeedsEntity subscriber, entity)
         queueExitEntities.push entity
         array_remove subscriber.entities, entity
 
@@ -144,8 +141,8 @@ class EntityManager
 
   # Helper functions
   _subscriberNeedsEntity: (subscriber, entity) ->
-    for component in subscriber.components?
-      if not entity in @entities or not entity of @components[component]?
+    for component in subscriber.components
+      if not (entity in @entities and component of @components and entity of @components[component])
         return false
     return true
 
